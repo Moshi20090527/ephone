@@ -1,0 +1,151 @@
+/* 設定全域樣式和藍粉配色變數 */
+:root {
+    --color-pink: #FFB3C7; /* 主粉色 */
+    --color-blue: #A2D2FF; /* 主藍色 */
+    --color-background: #F8F8FF; /* 淺背景色 (手機螢幕內背景) */
+    --color-text: #333333;
+    --color-digital: #FFFFFF; /* 數字時鐘顏色 */
+    --color-outer-bg: #E0F7FA; /* 瀏覽器外部背景 */
+    --color-phone-border: #111111; /* 手機外殼顏色 - 更黑 */
+    --notch-height: 25px; /* 瀏海高度 */
+}
+
+/* 滿版設置 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 防止滾動條 */
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    font-family: 'Arial', sans-serif;
+    background-color: var(--color-outer-bg); /* 瀏覽器背景 */
+}
+
+/* 手機容器 (模擬 iPhone 外殼) */
+#phone-container {
+    width: 375px; 
+    height: 812px; 
+    
+    /* 調整邊框和圓角以模擬 iPhone X/新機型 */
+    border: 12px solid var(--color-phone-border); /* 更厚的邊框 */
+    border-radius: 50px; /* 更大的圓角 */
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
+    position: relative;
+    overflow: hidden; 
+    background-color: var(--color-background); 
+}
+
+/* 瀏海 (Notch) 樣式 */
+#phone-container::before {
+    content: '';
+    position: absolute;
+    top: 12px; /* 位於黑色邊框下方 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px; /* 瀏海寬度 */
+    height: var(--notch-height); 
+    background-color: var(--color-phone-border); /* 與外殼同色 */
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 50;
+}
+
+/* --- 螢幕和時鐘調整 --- */
+
+/* 螢幕共用樣式 */
+.screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s;
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.screen.active {
+    opacity: 1;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+/* --- 鎖屏介面樣式 --- */
+#lock-screen {
+    /* ... 保持不變 ... */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--color-blue), var(--color-pink));
+    color: var(--color-digital);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.digital-clock {
+    font-size: 7em;
+    font-weight: bold;
+    letter-spacing: -2px;
+}
+
+/* --- 主介面樣式 --- */
+#home-screen {
+    background-color: var(--color-background);
+}
+
+/* 頂部狀態欄 - 調整 Padding 避開瀏海 */
+#status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* 增加頂部填充以避開瀏海區域 */
+    padding: calc(var(--notch-height) + 5px) 15px 5px; 
+    font-size: 0.9em;
+    color: var(--color-text);
+    /* 狀態欄背景可以保持透明，讓螢幕背景透出 */
+}
+
+#status-bar .digital-clock {
+    /* iPhone 狀態欄時鐘通常在左側 */
+    font-size: 1.2em;
+    color: var(--color-text);
+    text-shadow: none;
+    flex-grow: 0; /* 不再居中 */
+    text-align: left;
+}
+
+.status-icons {
+    /* 狀態圖標如信號、電量等通常在右側 */
+    font-size: 1.1em;
+    opacity: 0.7;
+    margin-left: auto; /* 推到右邊 */
+}
+
+/* --- 其餘樣式保持不變，略過以節省篇幅 --- */
+
+.date-display {font-size: 1.2em;margin-top: -10px;}
+.unlock-prompt {
+    position: absolute;bottom: 50px;font-size: 1.1em;opacity: 0.8;
+    animation: bounce 1.5s infinite;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-5px);}
+    60% {transform: translateY(-2px);}
+}
+#app-grid {display: grid;grid-template-columns: repeat(4, 1fr);gap: 20px;padding: 20px 10px;text-align: center;}
+.app-icon {display: flex;flex-direction: column;align-items: center;cursor: pointer;user-select: none;transition: transform 0.1s;}
+.app-icon:active {transform: scale(0.95);}
+.app-icon img {
+    width: 60px;height: 60px;border-radius: 15px;background-color: var(--color-pink);margin-bottom: 5px;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>');
+}
+.app-icon span {font-size: 0.8em;color: var(--color-text);}
+#app-page-container {
+    position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: var(--color-background);z-index: 30;
+    transform: translateX(100%);transition: transform 0.3s ease-out;
+}
+#app-page-container.visible {transform: translateX(0);}
