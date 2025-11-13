@@ -7,6 +7,7 @@ const State = {
 };
 
 let currentState = State.LOCK;
+let isDragging = false; // 新增拖曳狀態旗標
 let startY = 0; // 用於記錄滑動起始 Y 座標
 const SWIPE_THRESHOLD = 50; // 定義上滑解鎖所需的最小垂直距離 (px)
 
@@ -74,40 +75,73 @@ function handleUnlock() {
 
 // --- 處理滑動開始 ---
 function handleTouchStart(event) {
+    if (currentState !== State.LOCK) return; // 只在鎖屏時允許拖曳
+
     // 確保只處理單點觸控
     if (event.touches && event.touches.length > 1) return; 
 
     // 記錄起始 Y 座標，同時處理 Touch 和 Mouse 事件
     startY = event.touches ? event.touches[0].clientY : event.clientY;
     
-    // 針對滑鼠操作，需要監聽 mouseup 和 mousemove
+    // 針對滑鼠和觸控，都在 document 級別監聽 move 和 end 事件，以保證手勢不中斷
     if (!event.touches) {
         document.addEventListener('mousemove', handleTouchMove);
         document.addEventListener('mouseup', handleTouchEnd);
+    } else {
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
     }
+    
+    isDragging = true;
+    document.getElementById(State.LOCK).style.transition = 'none'; // 拖曳時移除 CSS transition
 }
 
-// --- 處理滑動移動 (不需要移動效果，只需記錄距離) ---
+// --- 處理滑動移動 (即時應用 transform) ---
 function handleTouchMove(event) {
-    // 阻止瀏覽器滾動，這是解決手機上點擊變滾動的關鍵
-    if (event.cancelable) {
-        event.preventDefault();
+    if (!isDragging || currentState !== State.LOCK) return;
+    
+    // 阻止瀏覽器滾動
+    if (event.cancelable) event.preventDefault();
+    
+    const currentY = event.touches ? event.touches[0].clientY : event.clientY;
+    let deltaY = currentY - startY; // 負值代表向上滑動
+    
+    const lockScreenEl = document.getElementById(State.LOCK);
+
+    // 限制只能向上拖曳，如果向下拉，則略微抵抗 (模擬 iOS 的橡皮筋效果)
+    if (deltaY < 0) {
+        lockScreenEl.style.transform = `translateY(${deltaY}px)`;
+    } else {
+        lockScreenEl.style.transform = `translateY(${deltaY * 0.1}px)`;
     }
 }
 
 // --- 處理滑動結束 ---
 function handleTouchEnd(event) {
-    // 清理滑鼠監聽器
+    if (!isDragging || currentState !== State.LOCK) return;
+    
+    // 清理所有監聽器
     document.removeEventListener('mousemove', handleTouchMove);
     document.removeEventListener('mouseup', handleTouchEnd);
-    
+    document.removeEventListener('touchmove', handleTouchMove, { passive: false });
+    document.removeEventListener('touchend', handleTouchEnd);
+
     // 判斷是觸控事件結束還是滑鼠事件結束
     const endY = event.changedTouches ? event.changedTouches[0].clientY : event.clientY;
+    const lockScreenEl = document.getElementById(State.LOCK);
     
+    lockScreenEl.style.transition = 'transform 0.3s ease-out'; // 恢復平滑彈回的 CSS transition
+
     // 判斷是否為上滑 (endY < startY) 且距離超過門檻
     if (startY - endY > SWIPE_THRESHOLD && currentState === State.LOCK) {
         handleUnlock();
+        // 讓它快速滑出螢幕 (解鎖動畫)
+        lockScreenEl.style.transform = `translateY(-${lockScreenEl.offsetHeight}px)`; 
+    } else {
+        // 未達門檻，平滑彈回原位
+        lockScreenEl.style.transform = 'translateY(0)';
     }
+    isDragging = false;
 }
 
 // --- 渲染微信聊天介面 ---
@@ -150,14 +184,12 @@ function init() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // 監聽鎖屏滑動事件 (模擬上滑解鎖)
+    // 監聽鎖屏滑動開始事件
     const lockScreenEl = document.getElementById(State.LOCK);
     if (lockScreenEl) {
-        // 支援觸控 (手機) 和 滑鼠 (PC)
+        // 只需要監聽 start 事件，move/end 事件會在 start 發生時加入到 document
         lockScreenEl.addEventListener('touchstart', handleTouchStart);
-        lockScreenEl.addEventListener('touchmove', handleTouchMove, { passive: false }); // 關鍵：阻止默認滾動
         lockScreenEl.addEventListener('mousedown', handleTouchStart);
-        document.addEventListener('touchend', handleTouchEnd); // 觸控結束監聽在 document 層級更可靠
     }
     
     // 監聽 App 圖示點擊事件
