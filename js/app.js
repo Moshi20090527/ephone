@@ -74,6 +74,9 @@ function handleUnlock() {
 
 // --- 處理滑動開始 ---
 function handleTouchStart(event) {
+    // 確保只處理單點觸控
+    if (event.touches && event.touches.length > 1) return; 
+
     // 記錄起始 Y 座標，同時處理 Touch 和 Mouse 事件
     startY = event.touches ? event.touches[0].clientY : event.clientY;
     
@@ -86,7 +89,10 @@ function handleTouchStart(event) {
 
 // --- 處理滑動移動 (不需要移動效果，只需記錄距離) ---
 function handleTouchMove(event) {
-    // 這裡可以加入視覺上的拖曳效果，但 v0.2 僅處理距離判斷
+    // 阻止瀏覽器滾動，這是解決手機上點擊變滾動的關鍵
+    if (event.cancelable) {
+        event.preventDefault();
+    }
 }
 
 // --- 處理滑動結束 ---
@@ -95,6 +101,7 @@ function handleTouchEnd(event) {
     document.removeEventListener('mousemove', handleTouchMove);
     document.removeEventListener('mouseup', handleTouchEnd);
     
+    // 判斷是觸控事件結束還是滑鼠事件結束
     const endY = event.changedTouches ? event.changedTouches[0].clientY : event.clientY;
     
     // 判斷是否為上滑 (endY < startY) 且距離超過門檻
@@ -148,7 +155,9 @@ function init() {
     if (lockScreenEl) {
         // 支援觸控 (手機) 和 滑鼠 (PC)
         lockScreenEl.addEventListener('touchstart', handleTouchStart);
+        lockScreenEl.addEventListener('touchmove', handleTouchMove, { passive: false }); // 關鍵：阻止默認滾動
         lockScreenEl.addEventListener('mousedown', handleTouchStart);
+        document.addEventListener('touchend', handleTouchEnd); // 觸控結束監聽在 document 層級更可靠
     }
     
     // 監聽 App 圖示點擊事件
