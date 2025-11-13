@@ -46,7 +46,7 @@ body {
     justify-content: space-between;
     padding: 0 25px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: white;
     z-index: 10; /* 確保在鎖屏上可見 */
 }
@@ -67,6 +67,11 @@ body {
     padding-top: 30px; /* 留給狀態列空間 */
 }
 
+/* 修正狀態列文字顏色和邊界 */
+.screen.active:not(.lock-screen) ~ .status-bar {
+    color: #333; /* 主畫面和 App 內狀態列改為黑色 */
+}
+
 .screen {
     position: absolute;
     top: 0;
@@ -82,11 +87,13 @@ body {
 .screen.active {
     opacity: 1;
     pointer-events: auto;
+    /* 確保 App 畫面不會超出手機邊緣的圓角 */
+    border-radius: 30px; /* 略小於手機殼的 40px */
 }
 
 /* --- 鎖定畫面 --- */
 .lock-screen {
-    background-image: url('https://via.placeholder.com/337x730/282c34/FFFFFF?text=iOS+Wallpaper'); /* 模擬背景 (已更新尺寸) */
+    background-image: linear-gradient(to top, #FFC0CB, #FF69B4); /* 粉色漸變背景 */
     background-size: cover;
     background-position: center;
     display: flex;
@@ -125,7 +132,7 @@ body {
 
 /* --- 主畫面 --- */
 .home-screen {
-    background-color: #e8e8e8; /* 模擬半透明背景 */
+    background-color: #A9D0F5; /* 藍色背景 */
     display: flex;
     flex-wrap: wrap;
     padding-top: 50px;
@@ -165,10 +172,11 @@ body {
     background-color: #f7f7f7;
     border-bottom: 0.5px solid #ccc;
     display: flex;
-    align-items: center;
-    padding: 0 10px;
-    font-weight: 500;
     justify-content: space-between;
+    align-items: center;
+    padding: 0 5px; /* 修正左右邊距 */
+    padding-top: 10px; /* 讓標題位於瀏海下方 */
+    font-weight: 500;
 }
 
 .chat-header .title {
@@ -181,6 +189,8 @@ body {
     color: #007aff;
     font-size: 16px;
     cursor: pointer;
+    /* 修正返回鍵與狀態列重疊 */
+    padding: 0 10px;
 }
 
 .chat-messages {
@@ -224,16 +234,18 @@ body {
 .chat-input {
     min-height: 50px;
     background-color: #f7f7f7;
-    border-top: 0.5px solid #ccc;
+    /* 移除邊框，讓它與手機邊緣融合 */
     padding: 5px 10px;
     display: flex;
     align-items: center;
+    /* 修正輸入框被底部圓角遮住的問題 */
+    padding-bottom: 25px; 
 }
 
 .chat-input input {
     flex-grow: 1;
     border: none;
-    border-radius: 20px;
+    border-radius: 18px;
     padding: 8px 15px;
     background-color: white;
     font-size: 15px;
