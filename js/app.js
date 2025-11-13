@@ -7,6 +7,8 @@ const State = {
 };
 
 let currentState = State.LOCK;
+let startY = 0; // 用於記錄滑動起始 Y 座標
+const SWIPE_THRESHOLD = 50; // 定義上滑解鎖所需的最小垂直距離 (px)
 
 // --- 核心函式：時鐘更新 ---
 function updateClock() {
@@ -63,10 +65,41 @@ function navigateTo(newState) {
     }
 }
 
-// --- 處理解鎖 (模擬上滑/點擊) ---
+// --- 處理解鎖 (模擬上滑手勢) ---
 function handleUnlock() {
     if (currentState === State.LOCK) {
         navigateTo(State.HOME);
+    }
+}
+
+// --- 處理滑動開始 ---
+function handleTouchStart(event) {
+    // 記錄起始 Y 座標，同時處理 Touch 和 Mouse 事件
+    startY = event.touches ? event.touches[0].clientY : event.clientY;
+    
+    // 針對滑鼠操作，需要監聽 mouseup 和 mousemove
+    if (!event.touches) {
+        document.addEventListener('mousemove', handleTouchMove);
+        document.addEventListener('mouseup', handleTouchEnd);
+    }
+}
+
+// --- 處理滑動移動 (不需要移動效果，只需記錄距離) ---
+function handleTouchMove(event) {
+    // 這裡可以加入視覺上的拖曳效果，但 v0.2 僅處理距離判斷
+}
+
+// --- 處理滑動結束 ---
+function handleTouchEnd(event) {
+    // 清理滑鼠監聽器
+    document.removeEventListener('mousemove', handleTouchMove);
+    document.removeEventListener('mouseup', handleTouchEnd);
+    
+    const endY = event.changedTouches ? event.changedTouches[0].clientY : event.clientY;
+    
+    // 判斷是否為上滑 (endY < startY) 且距離超過門檻
+    if (startY - endY > SWIPE_THRESHOLD && currentState === State.LOCK) {
+        handleUnlock();
     }
 }
 
@@ -110,10 +143,12 @@ function init() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // 監聽鎖屏點擊事件 (模擬上滑解鎖)
+    // 監聽鎖屏滑動事件 (模擬上滑解鎖)
     const lockScreenEl = document.getElementById(State.LOCK);
     if (lockScreenEl) {
-        lockScreenEl.addEventListener('click', handleUnlock);
+        // 支援觸控 (手機) 和 滑鼠 (PC)
+        lockScreenEl.addEventListener('touchstart', handleTouchStart);
+        lockScreenEl.addEventListener('mousedown', handleTouchStart);
     }
     
     // 監聽 App 圖示點擊事件
