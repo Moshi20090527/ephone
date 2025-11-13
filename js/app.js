@@ -3,11 +3,14 @@
 const State = {
     LOCK: 'lock-screen',
     HOME: 'home-screen',
-    WECHAT_CHAT: 'wechat-chat-screen'
+    WECHAT_CHAT: 'wechat-chat-screen',
+    SETTINGS: 'settings-screen' // 新增設定狀態
 };
 
 let currentState = State.LOCK;
-let isDragging = false; // 新增拖曳狀態旗標
+let appConfig = {
+    hasBorder: true // 預設有邊界
+};
 let startY = 0; // 用於記錄滑動起始 Y 座標
 const SWIPE_THRESHOLD = 50; // 定義上滑解鎖所需的最小垂直距離 (px)
 
@@ -63,6 +66,8 @@ function navigateTo(newState) {
     // 如果進入聊天畫面，渲染內容
     if (newState === State.WECHAT_CHAT) {
         renderWechatChat();
+    } else if (newState === State.SETTINGS) {
+        renderSettingsScreen();
     }
 }
 
@@ -73,10 +78,17 @@ function handleUnlock() {
     }
 }
 
+// --- 核心函式：切換邊界模式 ---
+function toggleBorderMode(enable) {
+    appConfig.hasBorder = enable;
+    // 根據是否啟用邊界，切換 body 上的 CSS Class
+    document.body.classList.toggle('no-border-mode', !enable);
+}
+
 // --- 處理滑動開始 ---
 function handleTouchStart(event) {
     if (currentState !== State.LOCK) return; // 只在鎖屏時允許拖曳
-
+    
     // 確保只處理單點觸控
     if (event.touches && event.touches.length > 1) return; 
 
@@ -178,11 +190,45 @@ function renderWechatChat() {
     }
 }
 
+// --- 渲染設定介面 ---
+function renderSettingsScreen() {
+    const settingsContainer = document.getElementById(State.SETTINGS);
+    
+    const settingsHTML = `
+        <div class="chat-header">
+            <span class="back-btn" onclick="navigateTo(State.HOME)">
+                &lt; 返回
+            </span>
+            <span class="title">設定</span>
+            <span class="back-btn"></span>
+        </div>
+        <div class="settings-content">
+            <h2 style="padding: 20px 20px 10px;">外觀</h2>
+            <ul style="list-style: none; padding: 0 20px; margin: 0;">
+                <li style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <span>手機邊界/自適應模式</span>
+                    <label class="switch">
+                        <input type="checkbox" id="border-toggle" ${appConfig.hasBorder ? 'checked' : ''} onchange="toggleBorderMode(this.checked)">
+                        <span class="slider round"></span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+    `;
+    settingsContainer.innerHTML = settingsHTML;
+    // 在切換到設定頁時，確保當前模式被應用
+    toggleBorderMode(appConfig.hasBorder); 
+}
+
+
 // --- 初始化與事件監聽 ---
 function init() {
     // 啟動時鐘更新 (每秒)
     updateClock();
     setInterval(updateClock, 1000);
+    
+    // 確保一開始就應用正確的邊界模式
+    toggleBorderMode(appConfig.hasBorder);
 
     // 監聽鎖屏滑動開始事件
     const lockScreenEl = document.getElementById(State.LOCK);
@@ -199,6 +245,9 @@ function init() {
             const appIcon = event.target.closest('.app-icon');
             if (appIcon && appIcon.dataset.app === 'wechat') {
                 navigateTo(State.WECHAT_CHAT);
+            } else if (appIcon && appIcon.dataset.app === 'settings') {
+                // 點擊設定圖示
+                navigateTo(State.SETTINGS);
             }
         });
     }
