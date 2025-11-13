@@ -7,8 +7,8 @@
     --color-digital: #FFFFFF; /* 數字時鐘顏色 */
     --color-outer-bg: #E0F7FA; /* 瀏覽器外部背景 */
     --color-phone-border: #111111; /* 手機外殼顏色 - 更黑 */
-    --notch-height: 28px; /* 瀏海高度，略微增加 */
-    --status-bar-height: 40px; /* 狀態欄的高度 */
+    --notch-height: 24px; /* 瀏海高度，縮小 */
+    --status-bar-height: 35px; /* 狀態欄的高度，縮小 */
 }
 
 /* 滿版設置 */
@@ -26,14 +26,15 @@ html, body {
 
 /* 手機容器 (模擬 iPhone 外殼) */
 #phone-container {
-    width: 375px; 
-    height: 812px; 
+    /* 縮小手機整體尺寸 */
+    width: 320px; /* 從 375px 縮小 */
+    height: 700px; /* 從 812px 縮小 */
     
-    border: 12px solid var(--color-phone-border); 
-    border-radius: 50px; 
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
+    /* 調整邊框和圓角以匹配縮小的尺寸 */
+    border: 10px solid var(--color-phone-border); /* 邊框略細 */
+    border-radius: 45px; /* 圓角略小 */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4); /* 陰影也略微縮小 */
     position: relative;
-    /* !重要調整: 讓內容正常溢出到瀏海下方，但螢幕內容還是被圓角切除 */
     overflow: hidden; 
     background-color: var(--color-background); 
 }
@@ -42,16 +43,15 @@ html, body {
 #phone-container::before {
     content: '';
     position: absolute;
-    /* 調整 top 位置，讓瀏海位於手機邊框上 */
     top: 0px; 
     left: 50%;
     transform: translateX(-50%);
-    width: 140px; 
+    width: 120px; /* 瀏海寬度隨手機縮小 */
     height: var(--notch-height); 
-    background-color: var(--color-phone-border); /* 與外殼同色 */
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    z-index: 50; /* 確保在最上層 */
+    background-color: var(--color-phone-border); 
+    border-bottom-left-radius: 12px; /* 圓角隨瀏海縮小 */
+    border-bottom-right-radius: 12px;
+    z-index: 50; 
 }
 
 /* --- 螢幕共用樣式 --- */
@@ -77,46 +77,45 @@ html, body {
 #lock-screen {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* 垂直居中內容 */
-    align-items: center; /* 水平居中內容 */
+    justify-content: center; 
+    align-items: center; 
     background: linear-gradient(135deg, var(--color-blue), var(--color-pink));
     color: var(--color-digital);
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 調整陰影 */
-    /* 確保鎖屏內容在浏海下方顯示 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); 
     padding-top: var(--status-bar-height); 
     box-sizing: border-box;
 }
 
 #lock-time {
-    font-size: 5em; /* 調整鎖屏時間字體大小 */
-    font-weight: 600; /* 加粗 */
+    font-size: 4.5em; /* 鎖屏時間字體略小 */
+    font-weight: 600; 
     letter-spacing: -1px;
-    margin-bottom: 5px; /* 與日期間距 */
+    margin-bottom: 5px; 
 }
 
 .date-display {
-    font-size: 1.1em;
+    font-size: 1.0em; /* 日期字體略小 */
     opacity: 0.9;
     font-weight: 400;
 }
 
 .unlock-prompt {
     position: absolute;
-    bottom: 30px; /* 調整上滑提示位置 */
-    font-size: 1.0em;
+    bottom: 25px; /* 上滑提示位置調整 */
+    font-size: 0.9em; /* 字體略小 */
     opacity: 0.7;
     animation: bounce 1.5s infinite;
 }
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-8px);} /* 增加彈跳距離 */
-    60% {transform: translateY(-4px);}
+    40% {transform: translateY(-7px);} /* 彈跳距離調整 */
+    60% {transform: translateY(-3px);}
 }
 
 /* --- 主介面樣式 --- */
 #home-screen {
-    background-color: var(--color-background);
+    background: linear-gradient(135deg, #BDEFFF, #E0C3FC); /* 主畫面背景換個淡藍淡紫漸變 */
 }
 
 /* 頂部狀態欄 - 調整 Padding 和元素位置避開瀏海 */
@@ -124,42 +123,42 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* 關鍵調整: 為狀態欄騰出瀏海的空間 */
-    padding: 10px 15px 5px; /* 上右下左 */
+    padding: 8px 12px 5px; /* 狀態欄內邊距縮小 */
     padding-top: calc(var(--notch-height) + 5px); /* 確保從瀏海下方開始 */
-    height: var(--status-bar-height); /* 固定高度 */
-    position: relative; /* 確保 z-index 工作 */
-    z-index: 40; /* 確保狀態欄在 app-grid 之上 */
+    height: var(--status-bar-height); 
+    position: relative; 
+    z-index: 40; 
 }
 
 #status-bar .digital-clock {
-    font-size: 1.0em; /* 狀態欄時鐘字體小一點 */
+    font-size: 0.9em; /* 狀態欄時鐘字體更小 */
     color: var(--color-text);
     text-shadow: none;
-    flex-grow: 0;
-    text-align: left;
+    flex-grow: 1; /* 讓時鐘居中 */
+    text-align: center; /* 狀態欄時鐘居中顯示 */
     position: absolute; /* 精確定位時鐘 */
-    left: 20px; /* 左側偏移 */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 水平居中修正 */
     top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
     font-weight: bold;
+    width: 60px; /* 給時鐘一個固定寬度防止抖動 */
 }
 
 .status-icons {
-    font-size: 1.0em; /* 狀態圖標字體小一點 */
+    font-size: 0.9em; /* 狀態圖標字體更小 */
     opacity: 0.8;
-    position: absolute; /* 精確定位圖標 */
-    right: 20px; /* 右側偏移 */
+    position: absolute; 
+    right: 15px; /* 右側偏移 */
     top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
 }
 
 /* 軟件圖標網格 - 調整 padding-top 避開狀態欄 */
 #app-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 四列佈局 */
-    gap: 20px;
-    /* 確保應用圖標在狀態欄下方顯示 */
-    padding: 20px 10px;
-    padding-top: calc(var(--status-bar-height) + 10px); /* 在狀態欄下方留出空間 */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px; /* 圖標間距縮小 */
+    padding: 15px 8px; /* 內邊距縮小 */
+    padding-top: calc(var(--status-bar-height) + 10px); 
     text-align: center;
 }
 
@@ -177,16 +176,16 @@ html, body {
 }
 
 .app-icon img {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
+    width: 50px; /* 圖標尺寸縮小 */
+    height: 50px;
+    border-radius: 12px; /* 圓角縮小 */
     background-color: var(--color-pink); 
-    margin-bottom: 5px;
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>');
+    margin-bottom: 4px; /* 間距縮小 */
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>'); /* 佔位圖標也縮小 */
 }
 
 .app-icon span {
-    font-size: 0.8em;
+    font-size: 0.75em; /* 圖標文字縮小 */
     color: var(--color-text);
 }
 
@@ -210,7 +209,7 @@ html, body {
 .app-header {
     display: flex;
     align-items: center;
-    padding: calc(var(--notch-height) + 10px) 15px 10px; /* 避開瀏海 */
+    padding: calc(var(--notch-height) + 10px) 15px 10px; 
     background-color: var(--color-background);
     border-bottom: 1px solid #eee;
     color: var(--color-text);
@@ -220,22 +219,22 @@ html, body {
 }
 
 .app-header .back-button {
-    font-size: 1.5em;
-    margin-right: 10px;
+    font-size: 1.3em; /* 按鈕字體縮小 */
+    margin-right: 8px;
     cursor: pointer;
     user-select: none;
 }
 
 .app-header h2 {
-    font-size: 1.2em;
+    font-size: 1.1em; /* 標題字體縮小 */
     margin: 0;
-    flex-grow: 1; /* 標題佔據剩餘空間 */
-    text-align: center; /* 標題居中 */
-    transform: translateX(-20px); /* 稍微左移，彌補返回按鈕的空間 */
+    flex-grow: 1; 
+    text-align: center; 
+    transform: translateX(-15px); /* 稍微左移，彌補返回按鈕的空間 */
 }
 
 .app-content {
-    padding: 15px;
-    font-size: 0.9em;
+    padding: 12px; /* 內容內邊距縮小 */
+    font-size: 0.85em; /* 內容字體縮小 */
     color: var(--color-text);
 }
