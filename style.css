@@ -8,6 +8,14 @@
     --color-outer-bg: #E0F7FA; /* 瀏覽器外部背景 */
     --color-phone-border: #111111; /* 手機外殼顏色 - 更黑 */
     --notch-height: 25px; /* 瀏海高度 */
+    
+    /* 縮小的螢幕尺寸 (約原尺寸的 90%) */
+    --screen-width: 337px; /* 375 * 0.9 = 337.5 */
+    --screen-height: 730px; /* 812 * 0.9 = 730.8 */
+    
+    /* 您要求的內邊距 */
+    --padding-vertical: 15px;
+    --padding-horizontal: 10px;
 }
 
 /* 滿版設置 */
@@ -25,28 +33,35 @@ html, body {
 
 /* 手機容器 (模擬 iPhone 外殼) */
 #phone-container {
-    width: 375px; 
-    height: 812px; 
+    /* 螢幕尺寸 + 邊框 + 內邊距 = 容器總尺寸 */
+    width: calc(var(--screen-width) + 2 * var(--padding-horizontal)); 
+    height: calc(var(--screen-height) + 2 * var(--padding-vertical)); 
     
-    /* 調整邊框和圓角以模擬 iPhone X/新機型 */
-    border: 12px solid var(--color-phone-border); /* 更厚的邊框 */
-    border-radius: 50px; /* 更大的圓角 */
+    border: 12px solid var(--color-phone-border);
+    border-radius: 50px;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
     position: relative;
     overflow: hidden; 
     background-color: var(--color-background); 
+    
+    /* 設置內邊距，實現螢幕內容的縮小和留空 */
+    padding: var(--padding-vertical) var(--padding-horizontal);
+    
+    /* 確保所有子元素從新的內邊距起算 */
+    box-sizing: content-box; 
 }
 
-/* 瀏海 (Notch) 樣式 */
+/* 瀏海 (Notch) 樣式 - 需考慮內邊距和邊框 */
 #phone-container::before {
     content: '';
     position: absolute;
-    top: 12px; /* 位於黑色邊框下方 */
+    /* 頂部位置 = 邊框厚度 + 上內邊距 (12px + 15px = 27px) */
+    top: calc(12px + var(--padding-vertical)); 
     left: 50%;
     transform: translateX(-50%);
-    width: 140px; /* 瀏海寬度 */
+    width: 126px; /* 略微縮小瀏海寬度 */
     height: var(--notch-height); 
-    background-color: var(--color-phone-border); /* 與外殼同色 */
+    background-color: var(--color-phone-border); 
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     z-index: 50;
@@ -54,17 +69,19 @@ html, body {
 
 /* --- 螢幕和時鐘調整 --- */
 
-/* 螢幕共用樣式 */
+/* 螢幕共用樣式 - 尺寸現在應該是 --screen-width/height */
 .screen {
-    width: 100%;
-    height: 100%;
+    width: var(--screen-width); /* 螢幕內容寬度 */
+    height: var(--screen-height); /* 螢幕內容高度 */
     position: absolute;
-    top: 0;
-    left: 0;
+    /* 調整 top/left 位置，使其位於 padding 內部 */
+    top: var(--padding-vertical);
+    left: var(--padding-horizontal);
     transition: transform 0.5s ease-out, opacity 0.5s;
     opacity: 0;
     z-index: 10;
     pointer-events: none;
+    border-radius: 35px; /* 為了配合外殼，內部螢幕也應該有圓角 */
 }
 
 .screen.active {
@@ -75,7 +92,6 @@ html, body {
 
 /* --- 鎖屏介面樣式 --- */
 #lock-screen {
-    /* ... 保持不變 ... */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -86,7 +102,7 @@ html, body {
 }
 
 .digital-clock {
-    font-size: 7em;
+    font-size: 6.5em; /* 略微縮小 */
     font-weight: bold;
     letter-spacing: -2px;
 }
@@ -103,28 +119,67 @@ html, body {
     align-items: center;
     /* 增加頂部填充以避開瀏海區域 */
     padding: calc(var(--notch-height) + 5px) 15px 5px; 
-    font-size: 0.9em;
+    font-size: 0.85em; /* 略微縮小字體 */
     color: var(--color-text);
-    /* 狀態欄背景可以保持透明，讓螢幕背景透出 */
 }
 
 #status-bar .digital-clock {
-    /* iPhone 狀態欄時鐘通常在左側 */
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: var(--color-text);
     text-shadow: none;
-    flex-grow: 0; /* 不再居中 */
+    flex-grow: 0; 
     text-align: left;
 }
 
 .status-icons {
-    /* 狀態圖標如信號、電量等通常在右側 */
-    font-size: 1.1em;
+    font-size: 1.0em;
     opacity: 0.7;
-    margin-left: auto; /* 推到右邊 */
+    margin-left: auto;
 }
 
-/* --- 其餘樣式保持不變，略過以節省篇幅 --- */
+/* 軟件圖標網格 */
+#app-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px; /* 縮小間距 */
+    padding: 15px 5px; /* 縮小內邊距 */
+    text-align: center;
+}
+
+.app-icon img {
+    width: 55px; /* 縮小圖標尺寸 */
+    height: 55px; 
+    border-radius: 12px;
+    background-color: var(--color-pink);
+    margin-bottom: 4px;
+    /* 占位圖示 */
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="55" height="55" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>');
+}
+.app-icon span {
+    font-size: 0.75em; /* 縮小文字 */
+    color: var(--color-text);
+}
+
+
+/* 應用程式內容頁面容器 (保持全螢幕，但尺寸已隨 .screen 調整) */
+#app-page-container {
+    /* 保持原樣，因為它的尺寸繼承了 .screen 的設定 */
+    width: var(--screen-width); 
+    height: var(--screen-height); 
+    top: var(--padding-vertical);
+    left: var(--padding-horizontal);
+    position: absolute;
+    background-color: var(--color-background);
+    z-index: 30;
+    transform: translateX(100%); 
+    transition: transform 0.3s ease-out;
+    border-radius: 35px; /* 保持圓角 */
+}
+
+#app-page-container.visible {transform: translateX(0);}
+
+
+/* --- 其餘保持不變，略過以節省篇幅 --- */
 
 .date-display {font-size: 1.2em;margin-top: -10px;}
 .unlock-prompt {
@@ -136,16 +191,5 @@ html, body {
     40% {transform: translateY(-5px);}
     60% {transform: translateY(-2px);}
 }
-#app-grid {display: grid;grid-template-columns: repeat(4, 1fr);gap: 20px;padding: 20px 10px;text-align: center;}
 .app-icon {display: flex;flex-direction: column;align-items: center;cursor: pointer;user-select: none;transition: transform 0.1s;}
 .app-icon:active {transform: scale(0.95);}
-.app-icon img {
-    width: 60px;height: 60px;border-radius: 15px;background-color: var(--color-pink);margin-bottom: 5px;
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>');
-}
-.app-icon span {font-size: 0.8em;color: var(--color-text);}
-#app-page-container {
-    position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: var(--color-background);z-index: 30;
-    transform: translateX(100%);transition: transform 0.3s ease-out;
-}
-#app-page-container.visible {transform: translateX(0);}
