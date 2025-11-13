@@ -3,62 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二次元小手機</title>
-    <link rel="stylesheet" href="style.css">
+    <title>iPhone Chat Simulator</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div id="phone-container">
-
-        <div id="lock-screen" class="screen active">
-            <div id="lock-time" class="digital-clock">00:00</div>
-            <div class="date-display">星期四, 11月 13日</div>
-
-            <div class="unlock-prompt">
-                向上滑動解鎖...
-            </div>
+    <div class="iphone">
+        <div class="notch">
+            <div class="camera"></div>
+            <div class="speaker"></div>
         </div>
 
-        <div id="home-screen" class="screen">
-            <div id="status-bar">
-                <div id="home-time" class="digital-clock">00:00</div>
-                <div class="status-icons">📶 🔋</div>
+        <div class="status-bar">
+            <span class="carrier">5G</span>
+            <span id="status-time" class="time">9:41</span>
+            <span class="battery">100% 🔋</span>
+        </div>
+
+        <div id="screen-container" class="screen-container">
+            <div id="lock-screen" class="screen lock-screen active">
+                <div id="lock-time" class="lock-time"></div>
+                <div class="lock-date"></div>
+                <div class="swipe-hint">
+                    上滑解鎖
+                </div>
             </div>
 
-            <div id="app-grid">
+            <div id="home-screen" class="screen home-screen">
                 <div class="app-icon" data-app="wechat">
-                    <img src="placeholder.png" alt="微信">
-                    <span>微信</span>
+                    <img src="https://via.placeholder.com/60x60/7CBB00/FFFFFF?text=W" alt="WeChat Icon">
+                    <span class="app-name">微信</span>
                 </div>
-                <div class="app-icon" data-app="settings">
-                    <img src="placeholder.png" alt="設定">
-                    <span>設定</span>
-                </div>
-                <div class="app-icon" data-app="gallery">
-                    <img src="placeholder.png" alt="相冊">
-                    <span>相冊</span>
-                </div>
-                <div class="app-icon" data-app="music">
-                    <img src="placeholder.png" alt="音樂">
-                    <span>音樂</span>
-                </div>
-                <div class="app-icon" data-app="shop">
-                    <img src="placeholder.png" alt="購物">
-                    <span>購物軟件</span>
-                </div>
-                <div class="app-icon" data-app="couple">
-                    <img src="placeholder.png" alt="情侶空間">
-                    <span>情侶空間</span>
-                </div>
-                </div>
-        </div>
-
-        <div id="app-page-container">
             </div>
 
+            <div id="wechat-chat-screen" class="screen wechat-chat-screen">
+                </div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/data/mockChat.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
-
