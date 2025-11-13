@@ -1,240 +1,249 @@
-/* 設定全域樣式和藍粉配色變數 */
-:root {
-    --color-pink: #FFB3C7; /* 主粉色 */
-    --color-blue: #A2D2FF; /* 主藍色 */
-    --color-background: #F8F8FF; /* 淺背景色 (手機螢幕內背景) */
-    --color-text: #333333;
-    --color-digital: #FFFFFF; /* 數字時鐘顏色 */
-    --color-outer-bg: #E0F7FA; /* 瀏覽器外部背景 */
-    --color-phone-border: #111111; /* 手機外殼顏色 - 更黑 */
-    --notch-height: 24px; /* 瀏海高度，縮小 */
-    --status-bar-height: 35px; /* 狀態欄的高度，縮小 */
-}
+/* css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-/* 滿版設置 */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* 防止滾動條 */
+/* --- 基礎設定與手機殼 --- */
+body {
     display: flex;
-    justify-content: center; /* 水平居中 */
-    align-items: center; /* 垂直居中 */
-    font-family: 'Arial', sans-serif;
-    background-color: var(--color-outer-bg); /* 瀏覽器背景 */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f2f5;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* 手機容器 (模擬 iPhone 外殼) */
-#phone-container {
-    /* 縮小手機整體尺寸 */
-    width: 320px; /* 從 375px 縮小 */
-    height: 700px; /* 從 812px 縮小 */
-    
-    /* 調整邊框和圓角以匹配縮小的尺寸 */
-    border: 10px solid var(--color-phone-border); /* 邊框略細 */
-    border-radius: 45px; /* 圓角略小 */
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4); /* 陰影也略微縮小 */
+.iphone {
+    width: 375px; /* 標準 iPhone X 寬度 */
+    height: 812px; /* 標準 iPhone X 高度 */
+    border: 10px solid #222;
+    border-radius: 40px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background-color: white;
     position: relative;
-    overflow: hidden; 
-    background-color: var(--color-background); 
+    overflow: hidden;
 }
 
-/* 瀏海 (Notch) 樣式 */
-#phone-container::before {
-    content: '';
+.notch {
     position: absolute;
-    top: 0px; 
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 120px; /* 瀏海寬度隨手機縮小 */
-    height: var(--notch-height); 
-    background-color: var(--color-phone-border); 
-    border-bottom-left-radius: 12px; /* 圓角隨瀏海縮小 */
-    border-bottom-right-radius: 12px;
-    z-index: 50; 
+    width: 150px;
+    height: 25px;
+    background-color: #222;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 100;
 }
 
-/* --- 螢幕共用樣式 --- */
-.screen {
+/* --- 狀態列 --- */
+.status-bar {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    z-index: 10; /* 確保在鎖屏上可見 */
+}
+
+.status-bar .time {
+    font-weight: 700;
+}
+
+.battery {
+    font-size: 11px;
+}
+
+/* --- 畫面容器與切換動畫 --- */
+.screen-container {
     width: 100%;
     height: 100%;
+    position: relative;
+    padding-top: 30px; /* 留給狀態列空間 */
+}
+
+.screen {
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.5s ease-out, opacity 0.5s;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    z-index: 10;
-    pointer-events: none;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    background-color: white;
+    pointer-events: none; /* 預設不可點擊 */
 }
 
 .screen.active {
     opacity: 1;
-    z-index: 20;
     pointer-events: auto;
 }
 
-/* --- 鎖屏介面樣式 --- */
-#lock-screen {
+/* --- 鎖定畫面 --- */
+.lock-screen {
+    background-image: url('https://via.placeholder.com/375x812/282c34/FFFFFF?text=iOS+Wallpaper'); /* 模擬背景 */
+    background-size: cover;
+    background-position: center;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center; 
-    background: linear-gradient(135deg, var(--color-blue), var(--color-pink));
-    color: var(--color-digital);
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); 
-    padding-top: var(--status-bar-height); 
-    box-sizing: border-box;
-}
-
-#lock-time {
-    font-size: 4.5em; /* 鎖屏時間字體略小 */
-    font-weight: 600; 
-    letter-spacing: -1px;
-    margin-bottom: 5px; 
-}
-
-.date-display {
-    font-size: 1.0em; /* 日期字體略小 */
-    opacity: 0.9;
-    font-weight: 400;
-}
-
-.unlock-prompt {
-    position: absolute;
-    bottom: 25px; /* 上滑提示位置調整 */
-    font-size: 0.9em; /* 字體略小 */
-    opacity: 0.7;
-    animation: bounce 1.5s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-7px);} /* 彈跳距離調整 */
-    60% {transform: translateY(-3px);}
-}
-
-/* --- 主介面樣式 --- */
-#home-screen {
-    background: linear-gradient(135deg, #BDEFFF, #E0C3FC); /* 主畫面背景換個淡藍淡紫漸變 */
-}
-
-/* 頂部狀態欄 - 調整 Padding 和元素位置避開瀏海 */
-#status-bar {
-    display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 8px 12px 5px; /* 狀態欄內邊距縮小 */
-    padding-top: calc(var(--notch-height) + 5px); /* 確保從瀏海下方開始 */
-    height: var(--status-bar-height); 
-    position: relative; 
-    z-index: 40; 
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-#status-bar .digital-clock {
-    font-size: 0.9em; /* 狀態欄時鐘字體更小 */
-    color: var(--color-text);
-    text-shadow: none;
-    flex-grow: 1; /* 讓時鐘居中 */
-    text-align: center; /* 狀態欄時鐘居中顯示 */
-    position: absolute; /* 精確定位時鐘 */
-    left: 50%; /* 水平居中 */
-    transform: translateX(-50%); /* 水平居中修正 */
-    top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
-    font-weight: bold;
-    width: 60px; /* 給時鐘一個固定寬度防止抖動 */
+.lock-time {
+    font-size: 72px;
+    font-weight: 300;
+    margin-top: -100px;
 }
 
-.status-icons {
-    font-size: 0.9em; /* 狀態圖標字體更小 */
-    opacity: 0.8;
-    position: absolute; 
-    right: 15px; /* 右側偏移 */
-    top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
+.lock-date {
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 5px;
 }
 
-/* 軟件圖標網格 - 調整 padding-top 避開狀態欄 */
-#app-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 15px; /* 圖標間距縮小 */
-    padding: 15px 8px; /* 內邊距縮小 */
-    padding-top: calc(var(--status-bar-height) + 10px); 
-    text-align: center;
+.swipe-hint {
+    position: absolute;
+    bottom: 50px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* --- 主畫面 --- */
+.home-screen {
+    background-color: #e8e8e8; /* 模擬半透明背景 */
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 50px;
 }
 
 .app-icon {
+    width: 25%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 10px 0;
     cursor: pointer;
-    user-select: none;
-    transition: transform 0.1s;
-}
-
-.app-icon:active {
-    transform: scale(0.95);
 }
 
 .app-icon img {
-    width: 50px; /* 圖標尺寸縮小 */
-    height: 50px;
-    border-radius: 12px; /* 圓角縮小 */
-    background-color: var(--color-pink); 
-    margin-bottom: 4px; /* 間距縮小 */
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>'); /* 佔位圖標也縮小 */
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
 }
 
-.app-icon span {
-    font-size: 0.75em; /* 圖標文字縮小 */
-    color: var(--color-text);
+.app-name {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
 }
 
-/* 應用程式內容頁面容器 */
-#app-page-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-background);
-    z-index: 30;
-    transform: translateX(100%);
-    transition: transform 0.3s ease-out;
+/* --- 微信聊天畫面 --- */
+.wechat-chat-screen {
+    background-color: #ededed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-#app-page-container.visible {
-    transform: translateX(0);
-}
-/* 應用頁面標頭 (回上一頁按鈕和標題) */
-.app-header {
+.chat-header {
+    height: 44px;
+    background-color: #f7f7f7;
+    border-bottom: 0.5px solid #ccc;
     display: flex;
     align-items: center;
-    padding: calc(var(--notch-height) + 10px) 15px 10px; 
-    background-color: var(--color-background);
-    border-bottom: 1px solid #eee;
-    color: var(--color-text);
-    position: sticky;
-    top: 0;
-    z-index: 40;
+    padding: 0 10px;
+    font-weight: 500;
+    justify-content: space-between;
 }
 
-.app-header .back-button {
-    font-size: 1.3em; /* 按鈕字體縮小 */
-    margin-right: 8px;
+.chat-header .title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 17px;
+}
+
+.chat-header .back-btn {
+    color: #007aff;
+    font-size: 16px;
     cursor: pointer;
-    user-select: none;
 }
 
-.app-header h2 {
-    font-size: 1.1em; /* 標題字體縮小 */
-    margin: 0;
-    flex-grow: 1; 
-    text-align: center; 
-    transform: translateX(-15px); /* 稍微左移，彌補返回按鈕的空間 */
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
 }
 
-.app-content {
-    padding: 12px; /* 內容內邊距縮小 */
-    font-size: 0.85em; /* 內容字體縮小 */
-    color: var(--color-text);
+.message-bubble {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.message-bubble.in {
+    justify-content: flex-start;
+}
+
+.message-bubble.out {
+    justify-content: flex-end;
+}
+
+.bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 20px;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+.bubble.in {
+    background-color: white;
+    border-bottom-left-radius: 5px;
+}
+
+.bubble.out {
+    background-color: #07c160; /* 微信綠 */
+    color: white;
+    border-bottom-right-radius: 5px;
+}
+
+.chat-input {
+    min-height: 50px;
+    background-color: #f7f7f7;
+    border-top: 0.5px solid #ccc;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.chat-input input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    background-color: white;
+    font-size: 15px;
+    margin: 0 5px;
+}
+
+.chat-input button {
+    background: none;
+    border: none;
+    color: #07c160;
+    font-size: 24px;
+    cursor: pointer;
 }
