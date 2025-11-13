@@ -12,16 +12,24 @@ body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.iphone {
-    width: 375px; /* 標準 iPhone X 寬度 */
-    height: 812px; /* 標準 iPhone X 高度 */
-    border: 10px solid #222;
-    border-radius: 40px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    background-color: white;
-    position: relative;
-    overflow: hidden;
-}
+--- a/css/style.css
++++ b/css/style.css
+@@ -10,13 +10,15 @@
+ .iphone {
+     width: 375px; /* 標準 iPhone X 寬度 */
+     height: 812px; /* 標準 iPhone X 高度 */
++    /* 調整：使用 scale 縮小整體尺寸，約 0.9 倍 */
++    transform: scale(0.9);
++    transform-origin: center;
+     border: 10px solid #222;
+     border-radius: 40px;
+     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+     background-color: white;
+     position: relative;
+     overflow: hidden;
++    /* 新增：為確保 scale 不影響布局，將定位設為 absolute */
++    position: absolute;
+ }
 
 .notch {
     position: absolute;
