@@ -7,7 +7,8 @@
     --color-digital: #FFFFFF; /* 數字時鐘顏色 */
     --color-outer-bg: #E0F7FA; /* 瀏覽器外部背景 */
     --color-phone-border: #111111; /* 手機外殼顏色 - 更黑 */
-    --notch-height: 25px; /* 瀏海高度 */
+    --notch-height: 28px; /* 瀏海高度，略微增加 */
+    --status-bar-height: 40px; /* 狀態欄的高度 */
 }
 
 /* 滿版設置 */
@@ -25,15 +26,14 @@ html, body {
 
 /* 手機容器 (模擬 iPhone 外殼) */
 #phone-container {
-    /* 這裡定義的是螢幕尺寸 + 邊框厚度 */
-    width: 375px; /* 寬度：縮小成長方形 */
-    height: 812px; /* 高度：縮小成長方形 */
+    width: 375px; 
+    height: 812px; 
     
-    /* 創建清晰的邊界/外殼 */
-    border: 12px solid var(--color-phone-border); /* 手機外殼邊界 */
-    border-radius: 50px; /* 大圓角 */
+    border: 12px solid var(--color-phone-border); 
+    border-radius: 50px; 
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); 
     position: relative;
+    /* !重要調整: 讓內容正常溢出到瀏海下方，但螢幕內容還是被圓角切除 */
     overflow: hidden; 
     background-color: var(--color-background); 
 }
@@ -42,63 +42,200 @@ html, body {
 #phone-container::before {
     content: '';
     position: absolute;
-    top: 12px; /* 位於黑色邊框下方 */
+    /* 調整 top 位置，讓瀏海位於手機邊框上 */
+    top: 0px; 
     left: 50%;
     transform: translateX(-50%);
-    width: 140px; /* 瀏海寬度 */
+    width: 140px; 
     height: var(--notch-height); 
     background-color: var(--color-phone-border); /* 與外殼同色 */
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
-    z-index: 50;
+    z-index: 50; /* 確保在最上層 */
 }
 
-/* --- 螢幕和時鐘調整 (省略未修改部分) --- */
+/* --- 螢幕共用樣式 --- */
 .screen {
-    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-    transition: transform 0.5s ease-out, opacity 0.5s; opacity: 0; z-index: 10; pointer-events: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s;
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
 }
-.screen.active {opacity: 1; z-index: 20; pointer-events: auto;}
+
+.screen.active {
+    opacity: 1;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+/* --- 鎖屏介面樣式 --- */
 #lock-screen {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 垂直居中內容 */
+    align-items: center; /* 水平居中內容 */
     background: linear-gradient(135deg, var(--color-blue), var(--color-pink));
-    color: var(--color-digital); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: var(--color-digital);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 調整陰影 */
+    /* 確保鎖屏內容在浏海下方顯示 */
+    padding-top: var(--status-bar-height); 
+    box-sizing: border-box;
 }
-.digital-clock {font-size: 7em;font-weight: bold;letter-spacing: -2px;}
-.date-display {font-size: 1.2em;margin-top: -10px;}
+
+#lock-time {
+    font-size: 5em; /* 調整鎖屏時間字體大小 */
+    font-weight: 600; /* 加粗 */
+    letter-spacing: -1px;
+    margin-bottom: 5px; /* 與日期間距 */
+}
+
+.date-display {
+    font-size: 1.1em;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
 .unlock-prompt {
-    position: absolute;bottom: 50px;font-size: 1.1em;opacity: 0.8;
+    position: absolute;
+    bottom: 30px; /* 調整上滑提示位置 */
+    font-size: 1.0em;
+    opacity: 0.7;
     animation: bounce 1.5s infinite;
 }
+
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-5px);}
-    60% {transform: translateY(-2px);}
+    40% {transform: translateY(-8px);} /* 增加彈跳距離 */
+    60% {transform: translateY(-4px);}
 }
 
-#home-screen {background-color: var(--color-background);}
-/* 頂部狀態欄 - 調整 Padding 避開瀏海 */
+/* --- 主介面樣式 --- */
+#home-screen {
+    background-color: var(--color-background);
+}
+
+/* 頂部狀態欄 - 調整 Padding 和元素位置避開瀏海 */
 #status-bar {
-    display: flex;justify-content: space-between;align-items: center;
-    padding: calc(var(--notch-height) + 5px) 15px 5px; 
-    font-size: 0.9em;color: var(--color-text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* 關鍵調整: 為狀態欄騰出瀏海的空間 */
+    padding: 10px 15px 5px; /* 上右下左 */
+    padding-top: calc(var(--notch-height) + 5px); /* 確保從瀏海下方開始 */
+    height: var(--status-bar-height); /* 固定高度 */
+    position: relative; /* 確保 z-index 工作 */
+    z-index: 40; /* 確保狀態欄在 app-grid 之上 */
 }
-#status-bar .digital-clock {
-    font-size: 1.2em;color: var(--color-text);text-shadow: none;flex-grow: 0;text-align: left;
-}
-.status-icons {font-size: 1.1em;opacity: 0.7;margin-left: auto;}
 
-#app-grid {display: grid;grid-template-columns: repeat(4, 1fr);gap: 20px;padding: 20px 10px;text-align: center;}
-.app-icon {display: flex;flex-direction: column;align-items: center;cursor: pointer;user-select: none;transition: transform 0.1s;}
-.app-icon:active {transform: scale(0.95);}
+#status-bar .digital-clock {
+    font-size: 1.0em; /* 狀態欄時鐘字體小一點 */
+    color: var(--color-text);
+    text-shadow: none;
+    flex-grow: 0;
+    text-align: left;
+    position: absolute; /* 精確定位時鐘 */
+    left: 20px; /* 左側偏移 */
+    top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
+    font-weight: bold;
+}
+
+.status-icons {
+    font-size: 1.0em; /* 狀態圖標字體小一點 */
+    opacity: 0.8;
+    position: absolute; /* 精確定位圖標 */
+    right: 20px; /* 右側偏移 */
+    top: calc(var(--notch-height) + 8px); /* 垂直位置調整 */
+}
+
+/* 軟件圖標網格 - 調整 padding-top 避開狀態欄 */
+#app-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 四列佈局 */
+    gap: 20px;
+    /* 確保應用圖標在狀態欄下方顯示 */
+    padding: 20px 10px;
+    padding-top: calc(var(--status-bar-height) + 10px); /* 在狀態欄下方留出空間 */
+    text-align: center;
+}
+
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+.app-icon:active {
+    transform: scale(0.95);
+}
+
 .app-icon img {
-    width: 60px;height: 60px;border-radius: 15px;background-color: var(--color-pink);margin-bottom: 5px;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    background-color: var(--color-pink); 
+    margin-bottom: 5px;
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="%23FFFFFF" stroke="none"><circle cx="12" cy="12" r="10"/></svg>');
 }
-.app-icon span {font-size: 0.8em;color: var(--color-text);}
 
-#app-page-container {
-    position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-color: var(--color-background);z-index: 30;
-    transform: translateX(100%);transition: transform 0.3s ease-out;
+.app-icon span {
+    font-size: 0.8em;
+    color: var(--color-text);
 }
-#app-page-container.visible {transform: translateX(0);}
+
+/* 應用程式內容頁面容器 */
+#app-page-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background);
+    z-index: 30;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+}
+
+#app-page-container.visible {
+    transform: translateX(0);
+}
+/* 應用頁面標頭 (回上一頁按鈕和標題) */
+.app-header {
+    display: flex;
+    align-items: center;
+    padding: calc(var(--notch-height) + 10px) 15px 10px; /* 避開瀏海 */
+    background-color: var(--color-background);
+    border-bottom: 1px solid #eee;
+    color: var(--color-text);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.app-header .back-button {
+    font-size: 1.5em;
+    margin-right: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.app-header h2 {
+    font-size: 1.2em;
+    margin: 0;
+    flex-grow: 1; /* 標題佔據剩餘空間 */
+    text-align: center; /* 標題居中 */
+    transform: translateX(-20px); /* 稍微左移，彌補返回按鈕的空間 */
+}
+
+.app-content {
+    padding: 15px;
+    font-size: 0.9em;
+    color: var(--color-text);
+}
